@@ -22,11 +22,9 @@ public class ChatClient {
         frame.getContentPane().add(new JScrollPane(messageArea), "Center");
         frame.pack();
 
-        textField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                out.println(textField.getText());
-                textField.setText("");
-            }
+        textField.addActionListener(e -> {
+            out.println(textField.getText());
+            textField.setText("");
         });
     }
 

@@ -2,19 +2,34 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class ChatServer {
     private static final int PORT = 9001;
     private static HashSet<String> names = new HashSet<>();
     private static HashSet<PrintWriter> writers = new HashSet<>();
 
+    private static List<String> buffer = new LinkedList<>();
+
     public static void main(String[] args) throws Exception {
         System.out.println("Сервер запущен");
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(buffer.isEmpty()){
+                    return;
+                }
+                //127.0.0.1
+                for (PrintWriter writer : writers) {
+                    writer.println("MESSAGE " + "mess" + ": " + buffer);
+                }
+                buffer.clear();
+            }
+        }, 5000, 5000);
         try (ServerSocket listener = new ServerSocket(PORT)) {
             while (true) {
                 new Handler(listener.accept()).start();
@@ -55,10 +70,7 @@ public class ChatServer {
                     if (input == null) {
                         return;
                     }
-                    for (PrintWriter writer : writers) {
-                        writer.println("MESSAGE " + name + ": " + input);
-                    }
-
+                    buffer.add(input);
                 }
             } catch (IOException e) {
                 System.out.println(e);
